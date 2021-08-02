@@ -1,28 +1,42 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using System.Collections;
 
 public class PlayerMovement : MonoBehaviour {
 
-    [SerializeField] float speed;
-    [SerializeField] Rigidbody2D rb;
+    [SerializeField] float speed = 5f;
+    [SerializeField] CharacterController controller;
     [SerializeField] Animator animator;
 
-    private Vector2 movement;
+    Vector3 forward, right;
+    Vector3 movement;
 
-    private void Update() {
-        movement = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
-        animator.SetFloat("Horizontal", movement.x);
-        animator.SetFloat("Vertical", movement.y);
+    void Start() {
+        forward = Camera.main.transform.forward;
+        forward.y = 0;
+        forward = Vector3.Normalize(forward);
+
+        right = Quaternion.Euler(new Vector3(0, 90, 0)) * forward;
+    }
+
+    void Update() {
+        Move();
         animator.SetFloat("Speed", movement.sqrMagnitude);
     }
 
-    private void FixedUpdate() {
-        Move();
-    }
-
     void Move() {
-        rb.MovePosition(rb.position + movement.normalized * speed * Time.fixedDeltaTime);
+        Vector3 horizontal = Input.GetAxis("Horizontal") * right;
+        Vector3 vertical = Input.GetAxis("Vertical") * forward;
+        movement = horizontal + vertical;
 
+        Vector3 facingDirection = Vector3.Normalize(horizontal + vertical);
+
+        /*
+        Vector3 movement = transform.position;
+        movement += horizontal;
+        movement += verticall; */
+
+        controller.Move(speed * Time.deltaTime * movement.normalized);
+        if (facingDirection != Vector3.zero)
+            transform.forward = facingDirection;
     }
 }
