@@ -4,9 +4,4 @@ using UnityEngine;
 
 public class ScenerioGenerator : MonoBehaviour {
 
-    [SerializeField] GameObject block;
-    [SerializeField] int rowCount = 4;
-
-    GameObject[][] scenario;
-
 }
